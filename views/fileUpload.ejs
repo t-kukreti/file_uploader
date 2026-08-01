@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload File</title>
+</head>
+<body>
+    <form action="/uploads/uploadFile" method="post" enctype="multipart/form-data">
+        <div>
+            <input type="hidden" name="folderId" value="<%=folderId ?? '' %>">
+        </div>
+        <div>
+            <label for="up_file">upload File: </label>
+            <input type="file" name="up_file" id="up_file" required>
+        </div>
+        <button type="submit">Upload</button>
+    </form>
+</body>
+</html>

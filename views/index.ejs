@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HomePage</title>
+</head>
+<body>
+
+    <% if(currentUser){ %>
+            <p>Logged in as <%=currentUser.email %></p>
+            <a href="/auth/logout">logout</a>
+            <a href="/uploads/uploadFile">upload a file</a>
+            <a href="/folders/new">Create a folder</a>
+
+            <h3>Your Folders </h3>
+            <% if(folders.length == 0){ %>
+                <p>No Folders yet</p>
+            <% }else{ %>
+                <ul>
+                    <%  folders.forEach((folder)=>{ %>
+                        <li>
+                            <a href="/folders/<%=folder.id%>">
+                                <%= folder.name %>
+                            </a>
+                        </li>
+                        <% }); %>
+                    </ul>
+                <%}%>
+                <% if(files.length !== 0){ %>
+                    <ul>
+                        <% files.forEach((file)=>{ %>
+                            <li>
+                                    <%= file.originalName %> 
+
+                            </li>
+                        <% }); %> 
+                    </ul>
+                <% } %> 
+
+
+    <% } else { %>
+        <div>
+            <a href="/auth/login">Login </a>
+        </div>
+        <div>
+            <a href="/auth/sign-up">Register</a>
+        </div>
+    <% } %>
+        
+</body>
+</html>
