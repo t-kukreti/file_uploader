@@ -102,7 +102,7 @@ const getLogOut = (req, res, next) => {
             return next(err);
         }
 
-        res.redirect('/auth/sign-up');
+        res.redirect('/');
     });
 };
 

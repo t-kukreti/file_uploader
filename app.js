@@ -48,11 +48,13 @@ const indexRouter = require('./routes/indexRouter');
 const authRouter = require('./routes/authRouter');
 const uploadRouter = require('./routes/uploadRouter');
 const folderRouter = require('./routes/folderRouter');
+const fileRouter = require('./routes/fileRouter');
 
 app.use('/', indexRouter);
 app.use('/auth', authRouter);
 app.use('/uploads', uploadRouter);
 app.use('/folders', folderRouter);
+app.use('/files',fileRouter);
 
 
 

@@ -1,0 +1,21 @@
+<li>
+    <a href="/files/<%=file.id%>/download">
+        <%= file.originalName %>
+    </a>
+
+    <form action="/files/<%=file.id%>/delete" method="post" style="display: inline;"
+        onsubmit="return confirm('Delete this file?')">
+        <button type="submit">delete</button>
+    </form>
+    
+    <button type="button" onclick="showRename('<%=file.id%>')">Rename</button>
+
+    <form action="/files/<%=file.id%>/rename" id="rename-<%=file.id%>" method="post" style="display: none;">
+        <div>
+            <label for="newFileName">fileName: </label>
+            <input type="text" name="newFileName" id="newFileName" value="<%=file.originalName%>">
+            <button type="submit">rename</button>
+        </div>
+    </form>
+
+</li>
