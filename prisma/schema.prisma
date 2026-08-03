@@ -42,7 +42,7 @@ model File{
   uploadedBy User @relation(fields: [uploadedById], references: [id])
 
   folderId Int?
-  folder Folder? @relation (fields: [folderId], references: [id])
+  folder Folder? @relation (fields: [folderId], references: [id], onDelete: Cascade)
 }
 
 model Folder{

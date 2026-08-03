@@ -9,7 +9,6 @@ const getFileUpload = (req,res)=>{
 
 const postFileUpload = async(req,res,next)=>{
     try{
-console.log(req.body);
         // handle duplication later.
         await uploadQueries.uploadInDb({
             originalName: req.file.originalname,

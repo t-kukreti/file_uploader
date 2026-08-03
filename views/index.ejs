@@ -26,10 +26,27 @@
                             <a href="/folders/<%=folder.id%>">
                                 <%= folder.name %>
                             </a>
+
+                            <form action="/folders/<%=folder.id%>/delete" method="post" style="display: inline;">
+                                <button type="submit" onclick="return confirm('This will delete the folder and all files inside it, do you want to continue?')">Delete</button>
+                            </form>
+
+                            <button type="button" onclick="
+                            this.nextElementSibling.style.display='inline';
+                            this.style.display = 'none';
+                            ">Rename</button>
+                            <form action="/folders/<%=folder.id%>/rename" method="post" style="display: none;">
+                                <div>
+                                    <label for="newFolderName-<%=folder.id%>">folderName:</label>
+                                    <input type="text" name="newFolderName" id="newFolderName-<%=folder.id%>" value="<%= folder.name%>">
+                                    <button type="submit">Rename</button>
+                                </div>
+                            </form>
                         </li>
                         <% }); %>
                 </ul>
                 <%}%>
+                <h2>your files</h2>
                     <% if(files.length !==0){ %>
                         <ul>
                             <% files.forEach((file)=>{ %>
@@ -55,5 +72,6 @@
 <script>
     function showRename(id){
         document.getElementById(`rename-${id}`).style.display = "inline";
+        document.getElementById(`renameBtn-${id}`).style.display = "none";
     }
 </script>

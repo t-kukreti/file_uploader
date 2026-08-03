@@ -15,23 +15,40 @@ async function getFoldersByOwner(ownerId){
     });
 }
 
-async function getFolderById(id){
-    return prisma.folder.findUnique({
+async function getFolderById(id,userId){
+    return prisma.folder.findFirst({
         where:{
             id,
+            ownerId: userId,
         },
         include: {
             files: true,
         }
     });
 }
-
+async function renameFolderById(id, newFolderName){
+    return prisma.folder.update({
+        where: {id},
+        data:{
+            name: newFolderName,
+        }
+    });
+}
+async function deleteFolderById(id){
+    return prisma.folder.delete({
+        where:{
+            id,
+        }
+    });
+}
 
 
 module.exports = {
     createFolder,
     getFoldersByOwner,
     getFolderById,
+    renameFolderById,
+    deleteFolderById,
 }
 
 
