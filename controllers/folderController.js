@@ -1,21 +1,21 @@
-const{body, validationResult, matchedData} = require('express-validator');
+const{validationResult, matchedData} = require('express-validator');
 const folderQueries = require('../db/folderQueries');
-const { folder } = require('../lib/prisma');
-const fs = require('fs/promises');
-const validatePostForm = [
-    body('folderName').trim().notEmpty().withMessage('Folder name is required').isLength({max: 100}).withMessage('Folder name is too long')
-];
+
+const fileQueries = require('../db/fileQueries');
+const storageServices = require('../services/storageServices');
+const {renameFolderValidation, createFolderValidation} = require('../validators/commonValidators');
 
 const getNewFolderForm = (req,res)=>{
-    res.render('newFolder', {errors: []});
+    res.render('newFolder', {errors: req.flash("errors")});
 };
 
 const postNewFolderForm = [
-    validatePostForm,
+    createFolderValidation,
     async(req, res, next)=>{
         const errors  = validationResult(req);
         if(!errors.isEmpty()){
-            return res.status(400).render('newFolder',{errors: errors.array()});
+            req.flash("errors", errors.array());
+            return res.redirect('/folders/new');
         }
 
         try{
@@ -32,7 +32,7 @@ const postNewFolderForm = [
     }
 ];
 
-const getFolderById = async(req,res)=>{
+const getFolderById = async(req,res, next)=>{
     try{
         const folder = await folderQueries.getFolderById(Number(req.params.id),req.user.id);
         if(!folder){
@@ -40,26 +40,41 @@ const getFolderById = async(req,res)=>{
         }
         res.render('userFolder',{
             folder,
+            errors: req.flash("errors"),
         });
     }catch(err){
         next(err);
     }
 };
-const renameFolder = async(req,res,next)=>{
+const renameFolder =[
+    renameFolderValidation,
+async(req,res,next)=>{
+
+
     try{
+
+        const errors = validationResult(req);
+        if(!errors.isEmpty()){
+            req.flash("errors", errors.array());
+            return res.redirect('/');
+        }
+
         const folder = await folderQueries.getFolderById(Number(req.params.id),req.user.id);
 
         if(!folder){
             return res.sendStatus(404);
         }
 
-        await folderQueries.renameFolderById(folder.id,req.body.newFolderName);
+        const {newFolderName} = matchedData(req);
+
+        await folderQueries.renameFolderById(folder.id, newFolderName);
         return res.redirect('/');
 
     }catch(err){
         next(err);
     }
-};
+}
+];
 
 const deleteFolder = async(req,res,next)=>{
     try{
@@ -69,11 +84,12 @@ const deleteFolder = async(req,res,next)=>{
             return res.sendStatus(404);
         }
 
-        await Promise.all(folder.files.map(file => fs.unlink(file.path)));
-        // for (const file of folder.files){
-            // await fs.unlink(file.path);
-        // }
+        // delete all the files from supabase
+        const files = await fileQueries.getAllFiles(req.user.id,folder.id);
+        const paths = files.map(file => file.path);
+        await storageServices.deleteFilesFromSupabase(paths);
 
+        // delete the folder 
         await folderQueries.deleteFolderById(folder.id);
         return res.redirect('/');
     }catch(err){

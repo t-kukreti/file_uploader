@@ -6,8 +6,7 @@
     <title>login</title>
 </head>
 <body>
-
-    <%- include('./partials/errors') %>
+    <%- include("partials/errors", { errors }) %>
     <h1>login</h1>
     <form action="/auth/login" method="post">
         <div>

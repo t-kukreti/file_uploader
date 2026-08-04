@@ -1,6 +1,7 @@
-
-   <% if(errors && errors.length){ %>
-      <%  errors.forEach((err)=>{ %>
-            <li> <%= err.msg %> </li>
-      <%  }); %>
-   <% } %> 
+<% if (errors && errors.length > 0) { %>
+    <div class="errors">
+        <% errors.forEach(error => { %>
+            <p class="error" style="color: red;"><%= error.msg %></p>
+        <% }) %>
+    </div>
+<% } %>

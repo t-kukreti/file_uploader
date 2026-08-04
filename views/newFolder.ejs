@@ -6,7 +6,7 @@
     <title>New Folder</title>
 </head>
 <body>
-    <%- include('./partials/errors') %> 
+    <%- include("partials/errors", { errors }) %>
     <form action="/folders" method="post">
         <div>
             <label for="folderName">Enter folder name: </label>

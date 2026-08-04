@@ -5,7 +5,7 @@
 
     <form action="/files/<%=file.id%>/delete" method="post" style="display: inline;"
         onsubmit="return confirm('Delete this file?')">
-        <input type="hidden" name="redirectTo" value="<%=typeof folder !== 'undefined' ? '/folders/' + folder.id : '/' %>">
+        <input type="hidden" name="redirectTo" value="<%=folder ? '/folders/' + folder.id : '/' %>">
         <button type="submit">Delete</button>
     </form>
     
@@ -15,7 +15,7 @@
         <div>
             <label for="newFileName-<%=file.id%>">fileName: </label>
             <input type="text" name="newFileName" id="newFileName-<%=file.id%>" value="<%=file.originalName%>">
-            <input type="hidden" name="redirectTo" value="<%=typeof folder !== 'undefined' ? '/folders/' + folder.id : '/'%>">
+            <input type="hidden" name="redirectTo" value="<%= folder ? '/folders/' + folder.id : '/'%>">
             <button type="submit">Rename</button>
         </div>
     </form>

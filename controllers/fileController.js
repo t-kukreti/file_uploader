@@ -1,6 +1,9 @@
 const fileQueries = require('../db/fileQueries');
-const fs = require('fs/promises');
 const storageServices = require('../services/storageServices');
+
+const {renameFileValidation} = require('../validators/commonValidators');
+const { validationResult, matchedData } = require('express-validator');
+
 
 
 
@@ -12,7 +15,7 @@ const viewFile = async(req,res,next)=>{
         if(!file){
             return res.sendStatus(404);
         }
-        res.render('viewFile',{file});
+        res.render('viewFile',{file, errors: req.flash("errors")});
     }catch(err){
         return next(err);
     }
@@ -44,7 +47,7 @@ const deleteFile = async(req,res,next)=>{
         }
 
         // delete file from supabase
-        await storageServices.deleteFileFromSupabase(file.path);
+        await storageServices.deleteFilesFromSupabase([file.path]);
         // delete record from db
         await fileQueries.deleteFileById(file.id);
 
@@ -54,16 +57,26 @@ const deleteFile = async(req,res,next)=>{
     }
 };
 
-const renameFile = async(req,res,next)=>{
+const renameFile = [
+    renameFileValidation,
+
+async(req,res,next)=>{
     try{
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            req.flash("errors", errors.array());
+            return res.redirect(req.body.redirectTo || '/');
+        }
         const file = await fileQueries.getFileById(Number(req.params.id),req.user.id);
 
         if(!file){
             return res.sendStatus(404);
         }
+        const {newFileName} = matchedData(req);
+
 
         await fileQueries.renameFileById(file.id,{
-            originalName: req.body.newFileName,
+            originalName: newFileName,
         });
         
         return res.redirect(req.body.redirectTo || '/');
@@ -71,7 +84,8 @@ const renameFile = async(req,res,next)=>{
     }catch(err){
         return next(err);
     }
-};
+}
+];
 
 
 module.exports = {

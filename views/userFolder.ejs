@@ -11,6 +11,7 @@
 <script src="/js/showRenameBtn.js"></script>
 
 <body>
+    <%- include("partials/errors", { errors }) %>
     <h2>
         <%= folder.name %>
     </h2>
@@ -21,7 +22,7 @@
 
             <ul>
                 <% folder.files.forEach((file)=>{ %>
-                    <%- include('partials/fileItem', {file}) %>
+                    <%- include('partials/fileItem', {file, folder}) %>
                     <% }); %>
             </ul>
             <% } %>

@@ -14,10 +14,9 @@ async function uploadToSupabase(file){
     return data;
 };
 
-async function deleteFileFromSupabase(path){
-    const {data, error} = await supabase.storage.from('uploads').remove(
-        [path],
-    );
+async function deleteFilesFromSupabase(paths){
+    if(paths.length === 0) return;
+    const {error} = await supabase.storage.from('uploads').remove(paths);
     if(error){
         throw error;
     }
@@ -38,6 +37,6 @@ async function downloadFileFromSupabase(path, originalName){
 
 module.exports = {
     uploadToSupabase,
-    deleteFileFromSupabase,
+    deleteFilesFromSupabase,
     downloadFileFromSupabase,
 }

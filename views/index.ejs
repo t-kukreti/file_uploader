@@ -10,6 +10,8 @@
 
 <body>
 
+    <%- include("partials/errors", { errors }) %>
+
     <% if(currentUser){ %>
         <p>Logged in as <%=currentUser.email %>
         </p>
@@ -51,7 +53,7 @@
                     <% if(files.length !==0){ %>
                         <ul>
                             <% files.forEach((file)=>{ %>
-                                <%-include('partials/fileItem',{file})%>
+                                <%-include('partials/fileItem',{file, folder: null})%>
                                 <% }); %>
                         </ul>
                         <% } else{  %>

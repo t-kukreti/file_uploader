@@ -3,49 +3,21 @@ const userQueries = require('../db/userQueries');
 const passwordUtils = require('../lib/passwordUtils');
 const passport = require('passport');
 
-
-
-
-const postSignUpValidation = [
-    body('email').isEmail().withMessage(`email must be formatted correctly`),
-    body('password').isStrongPassword().withMessage(`create a more strong password`),
-
-    body('confirm_password').custom((value, {req})=>{
-        return value === req.body.password;
-    }).withMessage(`password do not match`),
-
-    body('email').custom(async(value)=>{
-        const user = await userQueries.findUserByEmail(value);
-        if(user){
-            throw new Error('email already in use');
-        }
-        return true;
-    }),
-
-];
-
-
-const validateLogIn = [
-    body("email").isEmail().withMessage(`$email must be formatted correctly`),
-    body("password").notEmpty().withMessage(`password is empty`),
-];
-
-
-
+const authValidator = require('../validators/authValidators');
 
 const getSignUpForm = (req,res) => {
     res.render('signUp', {
-        errors: [],
+        errors: req.flash("errors"),
     });
 };
 
 const postSignUpForm = [
-    postSignUpValidation,
+    authValidator.postSignUpValidation,
     async(req, res)=>{
         const errors = validationResult(req);
         if(!errors.isEmpty()){
-            console.log(errors.array());
-            return res.status(400).render('signUp',{ errors: errors.array(),});  
+            req.flash("errors", errors.array());
+            return res.redirect('/auth/sign-up'); 
         }
         try{
             const {email, password} = matchedData(req);
@@ -55,7 +27,7 @@ const postSignUpForm = [
             res.redirect('/auth/login');
 
         }catch(err){
-            console.log(err);
+
             res.status(500).send('Internal Server Error');
         }
 
@@ -64,16 +36,17 @@ const postSignUpForm = [
 
 const getLogInForm = (req, res) => {
     res.render('login', {
-        errors: [],
+        errors: req.flash("errors"),
     });
 }
 
 const postLogInForm = [
-    validateLogIn,
+    authValidator.validateLogIn,
     async(req, res, next) => {
         const errors = validationResult(req);
         if(!errors.isEmpty()){
-            return res.status(400).render('login', {errors: errors.array()});
+            req.flash("errors", errors.array());
+            return res.redirect('/auth/login');
         }
         return next();
 
@@ -86,7 +59,8 @@ const postLogInForm = [
                 return next(err);
             }
             if(!user){
-                return res.status(401).render('login', {errors: [{msg: info.message}]});
+                req.flash("errors", [{msg: info.message}]);
+                return res.redirect('/auth/login');
             }
             req.logIn(user, (err)=>{
                 if(err) return next(err);

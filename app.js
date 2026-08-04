@@ -5,6 +5,7 @@ const session = require('express-session');
 const prisma = require('./lib/prisma');
 const {PrismaSessionStore} = require('@quixo3/prisma-session-store');
 const passport = require('passport');
+const flash = require('express-flash');
 
 const PORT = process.env.PORT || 8000;
 
@@ -33,6 +34,9 @@ app.use(session({
     )
 })
 );
+
+
+app.use(flash());
 
 
 app.use(passport.initialize());

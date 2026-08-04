@@ -1,6 +1,5 @@
 const folderQueries = require('../db/folderQueries');
 const fileQueries = require('../db/fileQueries');
-const upload = require('../lib/multer');
 
 const getIndexPage = async(req, res, next) => {
     try{
@@ -9,12 +8,13 @@ const getIndexPage = async(req, res, next) => {
         if(req.user){
             // you can run these parallely check it out later.
             folders = await folderQueries.getFoldersByOwner(req.user.id);
-            files = await fileQueries.getAllFiles(req.user.id);
+            files = await fileQueries.getAllFiles(req.user.id,null);
         }
 
         res.render('index',{
             folders,
-            files
+            files,
+            errors: req.flash("errors"),
         });
     }catch(err){
         next(err);

@@ -1,16 +1,17 @@
 const prisma = require('../lib/prisma');
 
-async function getAllFiles(userId){
+async function getAllFiles(userId, folderId){
     return prisma.file.findMany({
         where: {
             uploadedById: userId,
-            folderId: null,
+            folderId,
         },
         orderBy: {
             createdAt: 'asc',
         }
     });
 }
+
 
 async function getFileById(id, userId){
     return prisma.file.findFirst({

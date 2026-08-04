@@ -1,5 +1,4 @@
 const uploadQueries = require('../db/uploadQueries');
-const upload = require('../lib/multer');
 const storageServices = require('../services/storageServices');
 const fs = require('fs');
 
@@ -10,7 +9,7 @@ const getFileUpload = (req,res)=>{
 
     res.render('fileUpload',{
         folderId: req.query.folderId ?? null,
-        error: null,
+        errors: req.flash("errors"),
     });
 };
 
