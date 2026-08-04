@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HomePage</title>
 </head>
+<script src="/js/showRenameBtn.js"></script>
 
 <body>
 
@@ -53,6 +54,8 @@
                                 <%-include('partials/fileItem',{file})%>
                                 <% }); %>
                         </ul>
+                        <% } else{  %>
+                            <p>No files are present</p>
                         <% } %>
 
 
@@ -69,9 +72,3 @@
 
 
 </html>
-<script>
-    function showRename(id){
-        document.getElementById(`rename-${id}`).style.display = "inline";
-        document.getElementById(`renameBtn-${id}`).style.display = "none";
-    }
-</script>

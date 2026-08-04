@@ -1,5 +1,17 @@
 const prisma = require('../lib/prisma');
 
+async function getAllFiles(userId){
+    return prisma.file.findMany({
+        where: {
+            uploadedById: userId,
+            folderId: null,
+        },
+        orderBy: {
+            createdAt: 'asc',
+        }
+    });
+}
+
 async function getFileById(id, userId){
     return prisma.file.findFirst({
         where:{
@@ -30,4 +42,5 @@ module.exports = {
     getFileById,
     deleteFileById,
     renameFileById,
+    getAllFiles,
 }

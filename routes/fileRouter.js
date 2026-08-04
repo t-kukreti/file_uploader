@@ -5,6 +5,7 @@ const { isObjectEnumValue } = require('@prisma/client/runtime/client');
 
 const fileRouter = Router();
 
+fileRouter.get('/:id', isAuthenticated, fileController.viewFile);
 fileRouter.get('/:id/download', isAuthenticated, fileController.downloadFile);
 
 fileRouter.post('/:id/delete', isAuthenticated, fileController.deleteFile);

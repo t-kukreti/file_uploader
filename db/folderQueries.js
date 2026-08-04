@@ -11,6 +11,9 @@ async function getFoldersByOwner(ownerId){
     return prisma.folder.findMany({
         where:{
             ownerId,
+        },
+        orderBy:{
+            createdAt: 'asc',
         }
     });
 }
@@ -22,7 +25,11 @@ async function getFolderById(id,userId){
             ownerId: userId,
         },
         include: {
-            files: true,
+            files: {
+                orderBy: {
+                    createdAt: 'asc',
+                }
+            }
         }
     });
 }

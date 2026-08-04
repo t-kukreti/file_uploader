@@ -6,16 +6,6 @@ async function uploadInDb(data){
     });
 };
 
-async function getRootFiles(userId){
-    return prisma.file.findMany({
-        where: {
-            uploadedById: userId,
-            folderId: null,
-        }
-    });
-}
-
 module.exports = {
     uploadInDb,
-    getRootFiles,
 }

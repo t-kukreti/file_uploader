@@ -6,6 +6,10 @@
     <title>Upload File</title>
 </head>
 <body>
+    <% if(error){ %>
+        <p style="color: red;"><%= error %></p>
+   <% } %>
+
     <form action="/uploads/uploadFile" method="post" enctype="multipart/form-data">
         <div>
             <input type="hidden" name="folderId" value="<%=folderId ?? '' %>">

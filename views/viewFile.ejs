@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%=file.originalName %> details</title>
+</head>
+<body>
+
+    <ul>
+        <li>
+            fileName: <%= file.originalName %>
+        </li>
+        <li>
+            fileSize: <%= (file.size / 1024).toFixed(2) %> KB
+        </li>
+        <li>
+            mimeType: <%= file.mimeType %>
+        </li>
+        <li>
+            createdAt: <%= file.createdAt.toLocaleString() %>
+        </li>
+    </ul>
+    <form action="/files/<%=file.id%>/download" method="get">
+        <button type="submit">Download</button>
+    </form>
+    
+</body>
+</html>
