@@ -1,16 +1,26 @@
 const uploadQueries = require('../db/uploadQueries');
+const folderQueries = require('../db/folderQueries');
 const storageServices = require('../services/storageServices');
 const fs = require('fs');
 
 
 
 
-const getFileUpload = (req,res)=>{
+const getFileUpload = async(req,res,next)=>{
+    try{
+        let folder = null;
+        if(req.query.folderId){
+            folder = await folderQueries.getFolderById(Number(req.query.folderId),req.user.id);
+        }
 
-    res.render('fileUpload',{
-        folderId: req.query.folderId ?? null,
+        res.render('fileUpload',{
+        folder,
         errors: req.flash("errors"),
     });
+    }catch(err){
+        return next(err);
+    }
+
 };
 
 const postFileUpload = async(req,res,next)=>{

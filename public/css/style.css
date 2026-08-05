@@ -1,0 +1,407 @@
+/* ---------- Error Page ---------- */
+.error-page {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+    background: #f5f7fb;
+}
+
+.error-card {
+    width: 100%;
+    max-width: 500px;
+    background: white;
+    padding: 2.5rem;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,.08);
+    text-align: center;
+}
+
+.error-card h1 {
+    margin-bottom: 1rem;
+    font-size: 2rem;
+    color: #d32f2f;
+}
+
+.error-message {
+    margin-bottom: 2rem;
+    color: #555;
+    line-height: 1.6;
+}
+
+/* ---------- Authentication ---------- */
+
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f5f7fb;
+}
+
+.auth-page {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 420px;
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,.08);
+}
+
+.auth-card h1 {
+    margin: 0;
+    text-align: center;
+}
+
+.auth-subtitle {
+    margin: .75rem 0 2rem;
+    text-align: center;
+    color: #666;
+}
+
+.form-group {
+    margin-bottom: 1.25rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: .5rem;
+    font-weight: 600;
+}
+
+.form-group input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: .8rem 1rem;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #2563eb;
+}
+
+.btn {
+    display: inline-block;
+    width: 100%;
+    padding: .9rem;
+    border: none;
+    border-radius: 8px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.btn-primary {
+    background: #2563eb;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #1d4ed8;
+}
+
+.auth-link {
+    margin-top: 1.5rem;
+    text-align: center;
+}
+
+.auth-link a {
+    color: #2563eb;
+    text-decoration: none;
+}
+
+.auth-link a:hover {
+    text-decoration: underline;
+}
+
+/* ---------- File Upload ---------- */
+
+input[type="file"]{
+    width:100%;
+    padding:.6rem;
+    border:1px solid #d1d5db;
+    border-radius:8px;
+    background:#fff;
+    box-sizing:border-box;
+}
+
+input[type="file"]::file-selector-button{
+    margin-right:1rem;
+    padding:.55rem 1rem;
+    border:none;
+    border-radius:6px;
+    background:#2563eb;
+    color:#fff;
+    cursor:pointer;
+    font-weight:600;
+}
+
+input[type="file"]::file-selector-button:hover{
+    background:#1d4ed8;
+}
+
+/* ---------- File Details ---------- */
+
+.info-grid{
+    margin:2rem 0;
+}
+
+.info-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:1rem 0;
+    border-bottom:1px solid #e5e7eb;
+}
+
+.info-row:last-child{
+    border-bottom:none;
+}
+
+.info-row span{
+    color:#666;
+    font-weight:500;
+}
+
+.info-row strong{
+    color:#222;
+    font-weight:600;
+    text-align:right;
+    max-width:60%;
+    word-break:break-word;
+}
+
+/* ---------- Layout ---------- */
+
+.container{
+    width:min(1000px,90%);
+    margin:3rem auto;
+}
+
+/* ---------- Page Header ---------- */
+
+.page-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:2rem;
+    gap:2rem;
+}
+
+.page-header h1{
+    margin:0;
+}
+.folder-page-header{
+    display:flex;
+    flex-direction:column;
+    align-items:flex-start;
+    gap:1rem;
+}
+
+.page-subtitle{
+    margin-top:.4rem;
+    color:#666;
+}
+
+/* ---------- File List ---------- */
+
+.file-list{
+    list-style:none;
+    padding:0;
+    margin:0;
+}
+
+/* ---------- Empty State ---------- */
+
+.empty-state{
+    text-align:center;
+    padding:4rem 2rem;
+    border:2px dashed #d1d5db;
+    border-radius:16px;
+    background:white;
+}
+
+.empty-state h2{
+    margin-top:0;
+}
+
+/* ---------- Back Link ---------- */
+
+.back-link{
+    margin-top:2rem;
+}
+
+.back-link a{
+    text-decoration:none;
+    color:#2563eb;
+}
+
+
+/* ---------- File Card ---------- */
+
+.file-card{
+    background:white;
+    border-radius:12px;
+    padding:1rem 1.5rem;
+    margin-bottom:1rem;
+    box-shadow:0 4px 12px rgba(0,0,0,.06);
+}
+.file-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:1rem;
+}
+
+
+.file-info{
+    flex: 1;
+}
+
+.file-link{
+    text-decoration:none;
+    color:#222;
+    font-size:1.05rem;
+    font-weight:600;
+}
+
+.file-link:hover{
+    color:#2563eb;
+}
+
+.file-actions{
+    display:flex;
+    gap:.75rem;
+    align-items:center;
+    flex-shrink:0;
+}
+.upload-btn{
+    width:auto;
+}
+.btn-small{
+    width:auto;
+    padding:.6rem 1rem;
+}
+
+.btn-danger{
+    background:#dc2626;
+    color:white;
+}
+
+.btn-danger:hover{
+    background:#b91c1c;
+}
+
+.btn-secondary{
+    background:#6b7280;
+    color:white;
+}
+
+.btn-secondary:hover{
+    background:#4b5563;
+}
+
+.rename-form{
+    width: 100%;
+    margin-top:1rem;
+    padding-top:1rem;
+    border-top:1px solid #e5e7eb;
+}
+.rename-actions{
+    display:flex;
+    gap:.75rem;
+    margin-top:1rem;
+}
+/* ---------- Header ---------- */
+
+.header-actions{
+    display:flex;
+    gap:.75rem;
+    flex-wrap:wrap;
+}
+
+/* ---------- Folder Cards ---------- */
+
+.folder-list{
+    list-style:none;
+    padding:0;
+}
+
+.folder-card{
+    background:#fff;
+    padding:1rem 1.5rem;
+    border-radius:12px;
+    margin-bottom:1rem;
+    box-shadow:0 4px 12px rgba(0,0,0,.06);
+}
+
+.folder-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:1rem;
+}
+
+.folder-link{
+    font-weight:600;
+    text-decoration:none;
+    color:#222;
+    font-size:1.05rem;
+}
+
+.folder-link:hover{
+    color:#2563eb;
+}
+
+.folder-actions{
+    display:flex;
+    gap:.75rem;
+    flex-wrap:wrap;
+}
+/* ---------- Error Messages ---------- */
+
+
+.error-list {
+    margin-bottom: 1.5rem;
+    padding: 1rem 1.25rem;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    background: #fef2f2;
+    color: #b91c1c;
+}
+
+.error-list ul {
+    margin: 0;
+    padding-left: 1.25rem;
+}
+
+.error-list li:not(:last-child) {
+    margin-bottom: 0.4rem;
+}
+
+@media (max-width: 768px) {
+    .page-header,
+    .folder-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .header-actions,
+    .folder-actions,
+    .file-actions {
+        justify-content: center;
+    }
+}

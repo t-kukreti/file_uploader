@@ -1,7 +1,9 @@
 <% if (errors && errors.length > 0) { %>
-    <div class="errors">
-        <% errors.forEach(error => { %>
-            <p class="error" style="color: red;"><%= error.msg %></p>
-        <% }) %>
+    <div class="error-list">
+        <ul>
+            <% errors.forEach(error => { %>
+                <li><%= error.msg %></li>
+            <% }) %>
+        </ul>
     </div>
 <% } %>

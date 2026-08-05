@@ -4,15 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>New Folder</title>
+    <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-    <%- include("partials/errors", { errors }) %>
-    <form action="/folders" method="post">
-        <div>
-            <label for="folderName">Enter folder name: </label>
-            <input type="text" name="folderName" id="folderName"   maxlength="100" required>
-        </div>
-        <button type="submit">Create</button>
-    </form>
+    <main class="auth-page">
+        <div class="auth-card">
+
+            <h1>Create Folder</h1>
+            <p class="auth-subtitle">
+            Organize your files by creating a new folder.
+        </p>
+        <%- include("partials/errors", { errors }) %>
+        <form action="/folders" method="post">
+            <div class="form-group">
+                <label for="folderName">Enter folder name: </label>
+                <input type="text" name="folderName" id="folderName"   maxlength="100" required>
+            </div>
+            <button class="btn btn-primary" type="submit">Create</button>
+        </form>
+        <p class="auth-link">
+            <a href="/">Back to home</a>
+        </p>
+    </div>
+    </main>
 </body>
 </html>

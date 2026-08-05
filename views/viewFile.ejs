@@ -3,28 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%=file.originalName %> details</title>
-</head>
-<body>
-    <%- include("partials/errors", { errors }) %>
+    <title><%= file.originalName %></title>
 
-    <ul>
-        <li>
-            fileName: <%= file.originalName %>
-        </li>
-        <li>
-            fileSize: <%= (file.size / 1024).toFixed(2) %> KB
-        </li>
-        <li>
-            mimeType: <%= file.mimeType %>
-        </li>
-        <li>
-            createdAt: <%= file.createdAt.toLocaleString() %>
-        </li>
-    </ul>
-    <form action="/files/<%=file.id%>/download" method="get">
-        <button type="submit">Download</button>
-    </form>
-    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+
+<main class="auth-page">
+
+    <div class="auth-card">
+
+        <h1>📄 File Details</h1>
+
+        <%- include("partials/errors", { errors }) %>
+
+        <div class="info-grid">
+
+            <div class="info-row">
+                <span>File Name</span>
+                <strong><%= file.originalName %></strong>
+            </div>
+
+            <div class="info-row">
+                <span>Size</span>
+                <strong><%= (file.size / 1024).toFixed(2) %> KB</strong>
+            </div>
+
+            <div class="info-row">
+                <span>Type</span>
+                <strong><%= file.mimeType %></strong>
+            </div>
+
+            <div class="info-row">
+                <span>Uploaded</span>
+                <strong><%= file.createdAt.toLocaleString() %></strong>
+            </div>
+
+        </div>
+
+        <form action="/files/<%= file.id %>/download" method="get">
+            <button class="btn btn-primary" type="submit">
+                Download
+            </button>
+        </form>
+
+        <p class="auth-link">
+            <a href="/">← Back</a>
+        </p>
+
+    </div>
+
+</main>
+
 </body>
 </html>

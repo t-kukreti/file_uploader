@@ -4,73 +4,183 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HomePage</title>
+    <title>File Uploader</title>
+
+    <link rel="stylesheet" href="/css/style.css">
+    <script defer src="/js/ui.js"></script>
 </head>
-<script src="/js/showRenameBtn.js"></script>
 
 <body>
 
-    <%- include("partials/errors", { errors }) %>
+    <main class="container">
 
-    <% if(currentUser){ %>
-        <p>Logged in as <%=currentUser.email %>
-        </p>
-        <a href="/auth/logout">logout</a>
-        <a href="/uploads/uploadFile">upload a file</a>
-        <a href="/folders/new">Create a folder</a>
+        <%- include("partials/errors", { errors }) %>
 
-        <h3>Your Folders </h3>
-        <% if(folders.length==0){ %>
-            <p>No Folders yet</p>
-            <% }else{ %>
-                <ul>
-                    <% folders.forEach((folder)=>{ %>
-                        <li>
-                            <a href="/folders/<%=folder.id%>">
-                                <%= folder.name %>
-                            </a>
+            <% if(currentUser){ %>
 
-                            <form action="/folders/<%=folder.id%>/delete" method="post" style="display: inline;">
-                                <button type="submit" onclick="return confirm('This will delete the folder and all files inside it, do you want to continue?')">Delete</button>
-                            </form>
+                <header class="page-header">
 
-                            <button type="button" onclick="
-                            this.nextElementSibling.style.display='inline';
-                            this.style.display = 'none';
-                            ">Rename</button>
-                            <form action="/folders/<%=folder.id%>/rename" method="post" style="display: none;">
-                                <div>
-                                    <label for="newFolderName-<%=folder.id%>">folderName:</label>
-                                    <input type="text" name="newFolderName" id="newFolderName-<%=folder.id%>" value="<%= folder.name%>">
-                                    <button type="submit">Rename</button>
-                                </div>
-                            </form>
-                        </li>
-                        <% }); %>
-                </ul>
-                <%}%>
-                <h2>your files</h2>
-                    <% if(files.length !==0){ %>
-                        <ul>
-                            <% files.forEach((file)=>{ %>
-                                <%-include('partials/fileItem',{file, folder: null})%>
-                                <% }); %>
-                        </ul>
-                        <% } else{  %>
-                            <p>No files are present</p>
-                        <% } %>
+                    <div>
+                        <h1>📁 File Uploader</h1>
+                        <p class="page-subtitle">
+                            Logged in as <strong>
+                                <%= currentUser.email %>
+                            </strong>
+                        </p>
+                    </div>
 
+                    <div class="header-actions">
+                        <a class="btn btn-primary btn-small" href="/uploads/uploadFile">
+                            Upload File
+                        </a>
 
-                            <% } else { %>
-                                <div>
-                                    <a href="/auth/login">Login </a>
-                                </div>
-                                <div>
-                                    <a href="/auth/sign-up">Register</a>
-                                </div>
-                                <% } %>
+                        <a class="btn btn-secondary btn-small" href="/folders/new">
+                            New Folder
+                        </a>
+
+                        <a class="btn btn-danger btn-small" href="/auth/logout">
+                            Logout
+                        </a>
+                    </div>
+
+                </header>
+
+                <section>
+
+                    <h2>Your Folders</h2>
+
+                    <% if(folders.length===0){ %>
+
+                        <div class="empty-state">
+                            <h3>No folders yet</h3>
+                            <p>Create your first folder.</p>
+                        </div>
+
+                        <% } else { %>
+
+                            <ul class="folder-list">
+
+                                <% folders.forEach(folder=> { %>
+
+                                    <li class="folder-card">
+
+                                        <div class="folder-header">
+
+                                            <a class="folder-link" href="/folders/<%= folder.id %>">
+                                                📁 <%= folder.name %>
+                                            </a>
+
+                                            <div class="folder-actions">
+
+                                                <form action="/folders/<%= folder.id %>/delete"
+                                                    class="delete-folder-form" method="post">
+
+                                                    <button class="btn btn-danger btn-small" type="submit">
+
+                                                        Delete
+
+                                                    </button>
+
+                                                </form>
+                                                <button class="rename-btn btn btn-secondary btn-small"
+                                                    data-id="<%=folder.id%>">Rename</button>
+
+                                            </div>
+
+                                        </div>
+
+                                        <form action="/folders/<%= folder.id %>/rename" method="post"
+                                            class="rename-form" id="rename-<%=folder.id%>" style="display:none;">
+
+                                            <div class="form-group">
+
+                                                <label for="newFolderName-<%= folder.id %>">
+                                                    Folder Name
+                                                </label>
+
+                                                <input type="text" id="newFolderName-<%= folder.id %>"
+                                                    name="newFolderName" value="<%= folder.name %>">
+
+                                            </div>
+                                            <div class="rename-actions">
+
+                                                
+                                                <button class="btn btn-primary btn-small" type="submit">
+                                                    
+                                                    Save
+                                                    
+                                                </button>
+                                                <button class="btn btn-secondary btn-small cancel-rename" type="button"
+                                                data-id="<%= folder.id %>">
+                                                Cancel
+                                            </button>
+                                        </div>
+
+                                        </form>
+
+                                    </li>
+
+                                    <% }) %>
+
+                            </ul>
+
+                            <% } %>
+
+                </section>
+
+                <section>
+
+                    <h2>Your Files</h2>
+
+                    <% if(files.length===0){ %>
+
+                        <div class="empty-state">
+                            <h3>No files uploaded</h3>
+                            <p>Upload your first file.</p>
+                        </div>
+
+                        <% } else { %>
+
+                            <ul class="file-list">
+
+                                <% files.forEach(file=> { %>
+
+                                    <%- include("partials/fileItem",{ file, folder:null }) %>
+
+                                        <% }) %>
+
+                            </ul>
+
+                            <% } %>
+
+                </section>
+
+                <% } else { %>
+
+                    <div class="auth-card">
+
+                        <h1>📁 File Uploader</h1>
+
+                        <p class="auth-subtitle">
+                            Store and organize your files securely.
+                        </p>
+
+                        <a class="btn btn-primary" href="/auth/login">
+                            Login
+                        </a>
+
+                        <br><br>
+
+                        <a class="btn btn-secondary" href="/auth/sign-up">
+                            Create Account
+                        </a>
+
+                    </div>
+
+                    <% } %>
+
+    </main>
 
 </body>
-
 
 </html>

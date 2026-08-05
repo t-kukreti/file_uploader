@@ -1,23 +1,61 @@
-<li>
-    <a href="/files/<%=file.id%>">
-        <%= file.originalName %>
-    </a>
+<li class="file-card">
 
-    <form action="/files/<%=file.id%>/delete" method="post" style="display: inline;"
-        onsubmit="return confirm('Delete this file?')">
-        <input type="hidden" name="redirectTo" value="<%=folder ? '/folders/' + folder.id : '/' %>">
-        <button type="submit">Delete</button>
-    </form>
-    
-    <button id="renameBtn-<%=file.id%>" type="button" onclick="showRename('<%=file.id%>')">Rename</button>
+    <div class="file-row">
 
-    <form action="/files/<%=file.id%>/rename" id="rename-<%=file.id%>" method="post" style="display: none;">
-        <div>
-            <label for="newFileName-<%=file.id%>">fileName: </label>
-            <input type="text" name="newFileName" id="newFileName-<%=file.id%>" value="<%=file.originalName%>">
-            <input type="hidden" name="redirectTo" value="<%= folder ? '/folders/' + folder.id : '/'%>">
-            <button type="submit">Rename</button>
+        <div class="file-info">
+
+            <a class="file-link" href="/files/<%= file.id %>">
+                📄 <%= file.originalName %>
+            </a>
+
         </div>
+
+        <div class="file-actions">
+
+            <form action="/files/<%= file.id %>/delete" method="post" class="delete-file-form">
+
+                <input type="hidden" name="redirectTo" value="<%= folder ? '/folders/' + folder.id : '/' %>">
+
+                <button class="btn btn-danger btn-small" type="submit">
+                    Delete
+                </button>
+
+            </form>
+
+            <button data-id="<%=file.id%>" class="rename-btn btn btn-secondary btn-small" type="button">
+
+                Rename
+
+            </button>
+
+        </div>
+
+    </div>
+
+    <form action="/files/<%= file.id %>/rename" id="rename-<%= file.id %>" method="post" class="rename-form"
+        style="display:none;">
+
+        <div class="form-group">
+
+            <label for="newFileName-<%= file.id %>">
+                New Name
+            </label>
+
+            <input type="text" name="newFileName" id="newFileName-<%= file.id %>" value="<%= file.originalName %>">
+
+            <input type="hidden" name="redirectTo" value="<%= folder ? '/folders/' + folder.id : '/' %>">
+
+        </div>
+        <div class="rename-actions">
+
+            <button class="btn btn-primary btn-small" type="submit">
+                Save
+            </button>
+            <button class="btn btn-secondary btn-small cancel-rename" type="button" data-id="<%= file.id %>">
+                Cancel
+            </button>
+        </div>
+
     </form>
 
 </li>

@@ -4,19 +4,36 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Upload File</title>
+    <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-    <%- include("partials/errors", { errors }) %>
+    <main class="auth-page">
+        <div class="auth-card">
+            <h1>Upload File</h1>
+            <p class="auth-subtitle">
+    <% if (folder) { %>
+        Uploading to <strong>📁 <%= folder.name %></strong>
+    <% } else { %>
+        Upload a file to your storage.
+    <% } %>
+</p>
 
+            <%- include("partials/errors", { errors }) %>
+            
     <form action="/uploads/uploadFile" method="post" enctype="multipart/form-data">
-        <div>
-            <input type="hidden" name="folderId" value="<%=folderId ?? '' %>">
+        <div class="form-group">
+            <input type="hidden" name="folderId" value="<%=folder ? folder.id : '' %>">
         </div>
-        <div>
-            <label for="up_file">upload File: </label>
+        <div class="form-group">
+            <label for="up_file">Upload File: </label>
             <input type="file" name="up_file" id="up_file" required>
         </div>
-        <button type="submit">Upload</button>
+        <button class="btn btn-primary" type="submit">Upload</button>
     </form>
+    <p class="auth-link">
+        <a href="<%=folder ? '/folders/' + folder.id : '/'%>">← Cancel</a>
+    </p>
+    </div>
+</main>
 </body>
 </html>

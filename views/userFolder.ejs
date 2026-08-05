@@ -7,30 +7,51 @@
     <title>
         <%=folder.name%>
     </title>
+    <link rel="stylesheet" href="/css/style.css">
+    <script defer src="/js/ui.js"></script>
 </head>
-<script src="/js/showRenameBtn.js"></script>
 
 <body>
-    <%- include("partials/errors", { errors }) %>
-    <h2>
-        <%= folder.name %>
-    </h2>
+    <main class="container">
 
-    <% if(folder.files.length===0 ){ %>
-        <p>No files are present</p>
-        <% }else{ %>
+        <%- include("partials/errors", { errors }) %>
+        <div class="page-header folder-page-header">
+                <h1>📁 <%= folder.name %></h1>
+                <p class="page-subtitle">
+                    <%= folder.files.length %> file<%= folder.files.length === 1 ? "" : "s" %>
+                </p>
+        <a
+            class="btn btn-primary upload-btn"
+            href="/uploads/uploadFile?folderId=<%= folder.id %>">
+            Upload File
+        </a>
+            
+        </div>
+            <% if(folder.files.length===0 ){ %>
+        <div class="empty-state">
 
-            <ul>
-                <% folder.files.forEach((file)=>{ %>
-                    <%- include('partials/fileItem', {file, folder}) %>
-                    <% }); %>
-            </ul>
+            <h2>No files yet</h2>
+
+            <p>
+                Upload your first file to this folder.
+            </p>
+            </div>
+            <% }else{ %>
+                
+                <ul class="file-list">
+                    <% folder.files.forEach((file)=>{ %>
+                        <%- include('partials/fileItem', {file, folder}) %>
+                        <% }); %>
+                    </ul>
             <% } %>
 
-                <a href="/uploads/uploadFile?folderId=<%=folder.id%>">upload file to this folder</a>
+                <p class="back-link">
+        <a href="/">← Back to Home</a>
+    </p>
 
-
-
-</body>
-
-</html>
+            
+            
+        </main>
+        </body>
+        
+        </html>

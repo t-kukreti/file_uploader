@@ -12,7 +12,7 @@ const generalLimiter = rateLimit({
 
 const authLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
-    limit: 5,
+    limit: process.env.NODE_ENV === 'production' ? 5 : 100,
     standardHeaders: true,
     legacyHeaders: false,
     message: {
