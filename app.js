@@ -6,6 +6,8 @@ const prisma = require('./lib/prisma');
 const {PrismaSessionStore} = require('@quixo3/prisma-session-store');
 const passport = require('passport');
 const flash = require('express-flash');
+const {generalLimiter, authLimiter, uploadLimiter} = require('./middleware/rateLimiter');
+const helmet = require('helmet');
 
 const PORT = process.env.PORT || 8000;
 
@@ -13,6 +15,8 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 app.use(express.static('public'));
+
+app.use(helmet());
 
 app.set('view engine', 'ejs');
 
@@ -23,6 +27,9 @@ app.use(session({
         maxAge: 7 * 24 * 60 * 60 * 1000 
     },
     secret: process.env.SESSION_SECRET,
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
     resave: false,
     saveUninitialized: false,
     store: new PrismaSessionStore(
@@ -39,6 +46,10 @@ app.use(session({
 app.use(flash());
 
 
+app.use(generalLimiter);
+app.use('/auth', authLimiter);
+app.use('/uploads', uploadLimiter);
+
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -54,14 +65,27 @@ const authRouter = require('./routes/authRouter');
 const uploadRouter = require('./routes/uploadRouter');
 const folderRouter = require('./routes/folderRouter');
 const fileRouter = require('./routes/fileRouter');
-
 app.use('/', indexRouter);
 app.use('/auth', authRouter);
 app.use('/uploads', uploadRouter);
 app.use('/folders', folderRouter);
 app.use('/files',fileRouter);
 
+app.use((req, res) => {
+    res.status(404).render("error", {
+        message: "Page not found.",
+    });
+});
 
+// global error handler
+app.use((err,req,res,next)=>{
+    console.error(err);
+    res.status(err.status || 500);
+
+    res.render('error',{
+        message: process.env.NODE_ENV === "production" ? "Something went wrong" : err.message,
+    });
+});
 
 
 app.listen(PORT, (err)=>{
