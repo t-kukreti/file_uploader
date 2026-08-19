@@ -20,6 +20,7 @@ model User{
 
   files File[]
   folders Folder[]
+  uploadSessions UploadSession[]
 }
 
 model Session {
@@ -32,10 +33,10 @@ model Session {
 model File{
   id Int @id @default(autoincrement())
   originalName String 
-  fileName String
-  path String
+  objectKey String @unique
   mimeType String
-  size Int
+  size BigInt
+  status FileStatus @default(UPLOADING)
   createdAt DateTime @default(now())
 
   uploadedById Int
@@ -43,7 +44,11 @@ model File{
 
   folderId Int?
   folder Folder? @relation (fields: [folderId], references: [id], onDelete: Cascade)
+
+  uploadSession UploadSession ?
+  shares Share[]
 }
+
 
 model Folder{
   id Int @id @default(autoincrement())
@@ -51,9 +56,58 @@ model Folder{
   createdAt DateTime @default(now())
 
   ownerId Int
-  owner User @relation(fields: [ownerId], references:[id])
+  owner User @relation(fields: [ownerId], references: [id])
 
   files File[]
+}
+
+model UploadSession{
+  id String @id @default(uuid())
+  uploadId String @unique
+  objectKey String
+  partSize Int
+
+  fileId Int @unique
+  file File @relation(fields: [fileId], references: [id], onDelete: Cascade)
+
+  userId Int 
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  status UploadStatus @default(IN_PROGRESS)
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+
+  @@index([userId])
+
+}
+
+model Share{
+  id String @id @default(uuid())
+  token String @unique
+
+  fileId Int
+  file File @relation(fields: [fileId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime @default(now())
+  expiresAt DateTime ? 
+  revokedAt DateTime ? 
+  downloadCount Int @default(0)
+
+  @@index([fileId])
+
+}
+
+enum FileStatus{
+  UPLOADING 
+  READY
+  FAILED
+}
+
+enum UploadStatus{
+  IN_PROGRESS
+  COMPLETED
+  ABORTED
+  EXPIRED
 }
 
 
