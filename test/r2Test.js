@@ -7,6 +7,7 @@ require('dotenv').config();
 async function testR2(){
     try{
         const command = new ListObjectsV2Command({
+            
             Bucket: process.env.R2_BUCKET_NAME
         });
 

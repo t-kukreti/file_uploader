@@ -47,6 +47,8 @@
 
                 <section>
 
+                    <%- include('partials/incompleteUpload') %> 
+
                     <h2>Your Folders</h2>
 
                     <% if(folders.length===0){ %>
@@ -104,17 +106,17 @@
                                             </div>
                                             <div class="rename-actions">
 
-                                                
+
                                                 <button class="btn btn-primary btn-small" type="submit">
-                                                    
+
                                                     Save
-                                                    
+
                                                 </button>
                                                 <button class="btn btn-secondary btn-small cancel-rename" type="button"
-                                                data-id="<%= folder.id %>">
-                                                Cancel
-                                            </button>
-                                        </div>
+                                                    data-id="<%= folder.id %>">
+                                                    Cancel
+                                                </button>
+                                            </div>
 
                                         </form>
 

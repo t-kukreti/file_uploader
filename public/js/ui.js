@@ -35,7 +35,7 @@ document.querySelectorAll(".cancel-rename").forEach(button => {
         ).style.display = "inline-block";
     });
 });
-const form = document.getElementById(`rename-${id}`);
+// const form = document.getElementById(`rename-${id}`);
 
-form.reset();
-form.style.display = "none";
+// form.reset();
+// form.style.display = "none";

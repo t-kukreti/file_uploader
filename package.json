@@ -12,7 +12,7 @@
     "@aws-sdk/client-s3": "^3.1113.0",
     "@aws-sdk/s3-request-presigner": "^3.1113.0",
     "@prisma/adapter-pg": "^7.9.1",
-    "@prisma/client": "^7.9.1",
+    "@prisma/client": "^6.12.0",
     "@quixo3/prisma-session-store": "^3.1.21",
     "@supabase/supabase-js": "^2.112.0",
     "bcrypt": "^6.0.0",

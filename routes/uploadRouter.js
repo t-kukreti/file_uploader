@@ -7,17 +7,14 @@ const uploadRouter = Router();
 
 uploadRouter.get('/uploadFile', isAuthenticated, uploadController.getFileUpload);
 
-uploadRouter.post('/uploadFile',isAuthenticated, (req,res,next)=>{
-    upload.single('up_file')(req,res,(err)=>{
+uploadRouter.post('/uploadFile',isAuthenticated, uploadController.postFileUpload);
 
-        if(err){
-            return res.status(400).render('fileUpload',{
-                folderId: req.query.folderId ?? null,
-                error: err.message});
-        }
-        next();
-    });
-}, uploadController.postFileUpload);
+uploadRouter.post('/:uploadSessionId/parts/:partNumber', isAuthenticated, uploadController.getPartUploadUrl);
 
+uploadRouter.put('/:uploadSessionId/parts/:partNumber', isAuthenticated, uploadController.savePart);
+
+
+
+uploadRouter.post('/:uploadSessionId/complete', isAuthenticated, uploadController.completeUpload);
 
 module.exports = uploadRouter;

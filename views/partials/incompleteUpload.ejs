@@ -1,0 +1,18 @@
+
+<% if (incompleteUploads.length > 0) { %>
+    <section class="incomplete-uploads">
+        <h2>Uploads in progress</h2>
+
+        <% incompleteUploads.forEach(upload => { %>
+            <div class="upload-item">
+                <span><%= upload.file.originalName %></span>
+
+                <button
+                    class="resume-upload"
+                    data-upload-id="<%= upload.id %>">
+                    Resume
+                </button>
+            </div>
+        <% }) %>
+    </section>
+<% } %>
