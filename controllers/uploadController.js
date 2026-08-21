@@ -19,8 +19,21 @@ const getFileUpload = async (req, res, next) => {
             folder = await folderQueries.getFolderById(Number(req.query.folderId), req.user.id);
         }
 
+        const uploadSessionId = req.query.resume || null; 
+        // verify the uploadSession
+        if(uploadSessionId){
+            const uploadSession = await uploadQueries.getUploadSessionById(uploadSessionId, req.user.id);
+            if(! uploadSession){
+                return res.json({
+                    error: "upload session not found"
+                });
+            }
+        }
+
+
         res.render('fileUpload', {
             folder,
+            uploadSessionId,
             errors: req.flash("errors"),
         });
     } catch (err) {
@@ -28,6 +41,7 @@ const getFileUpload = async (req, res, next) => {
     }
 
 };
+
 
 const postFileUpload = async (req, res, next) => {
     try {
@@ -205,11 +219,46 @@ const completeUpload = async (req, res, next) => {
     }
 };
 
+const getUploadState = async (req, res, next) => {
+    try{
+        // verify the session
+        const { uploadSessionId } = req.params;
+
+        const uploadSession = await uploadQueries.getUploadSessionById(uploadSessionId, req.user.id);
+
+        if(! uploadSession){
+            return res.status(404).json({
+                error: "upload session not found",
+            });
+        }
+
+        const { partSize, file } = uploadSession;  
+        // get parts
+        const parts = await uploadQueries.getAllUploadParts(uploadSessionId);
+
+        console.log("sending response", parts, partSize, file);
+
+        return res.json({
+            message: "Upload state", 
+            partSize,
+            fileMetaData: {
+                ...file,
+                size: Number(file.size)
+            },
+            parts,
+        });
+
+    }catch(err){
+        return next(err);
+    }
+};
+
 module.exports = {
     getFileUpload,
     postFileUpload,
     getPartUploadUrl,
     completeUpload,
     savePart,
+    getUploadState,
 
 }

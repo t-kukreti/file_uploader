@@ -1,3 +1,6 @@
+
+
+
 document.querySelectorAll('.rename-btn').forEach((button)=>{
     button.addEventListener('click',()=>{
         const id = button.dataset.id;
@@ -24,6 +27,7 @@ document.querySelectorAll('.delete-file-form').forEach((form)=>{
         }
     });
 });
+
 document.querySelectorAll(".cancel-rename").forEach(button => {
     button.addEventListener("click", () => {
         const id = button.dataset.id;
@@ -35,7 +39,12 @@ document.querySelectorAll(".cancel-rename").forEach(button => {
         ).style.display = "inline-block";
     });
 });
-// const form = document.getElementById(`rename-${id}`);
 
-// form.reset();
-// form.style.display = "none";
+
+document.querySelectorAll(".resume-upload").forEach((button) => {
+    button.addEventListener('click', () => {
+        console.log("resume listener loaded");
+        const uploadSessionId = button.dataset.uploadId;
+        window.location.href = `/uploads/uploadFile?resume=${uploadSessionId}`;
+    });
+});

@@ -22,7 +22,7 @@ const authLimiter = rateLimit({
 
 const uploadLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
-    limit: 20,
+    limit: 50,
     standardHeaders: true,
     legacyHeaders: false,
     message:{

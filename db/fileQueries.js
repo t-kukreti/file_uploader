@@ -5,6 +5,9 @@ async function getAllFiles(userId, folderId){
         where: {
             uploadedById: userId,
             folderId,
+            status: {
+                in: ["READY"]
+            }
         },
         orderBy: {
             createdAt: 'asc',
