@@ -40,8 +40,12 @@
                         <progress id="upload-progress" value="0" max="100"></progress>
                         <span id="upload-percent">0%</span>
                     </div>
+
+                    <button class="btn btn-primary" type="button" id="pause-btn" hidden>
+                        Pause
+                    </button>
                     
-                    <button class="btn btn-primary" type="submit">
+                    <button class="btn btn-primary" type="submit" id="upload-btn">
                         <%= uploadSessionId ? "Resume Upload" : "Upload" %>
                     </button>
                 </form>

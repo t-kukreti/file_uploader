@@ -1,4 +1,4 @@
-export const resumeUpload = async (uploadSessionId, file, progressBar, progressText) => {
+export const resumeUpload = async (uploadSessionId, file, progressBar, progressText, checkIsPaused) => {
     // fetch the uploadState of current file
     const response = await fetch(`/uploads/${uploadSessionId}/uploadState`);
 
@@ -18,12 +18,16 @@ export const resumeUpload = async (uploadSessionId, file, progressBar, progressT
     const progressSaved = calculateProgress(completedParts, expectedPartCount);
     showProgress(progressBar, progressText, progressSaved);
     // upload the parts
-    await uploadParts(missingParts, partSize, file, uploadSessionId, completedParts, expectedPartCount,  progressBar, progressText);
+    const completed = await uploadParts(missingParts, partSize, file, uploadSessionId, completedParts, expectedPartCount,  progressBar, progressText, checkIsPaused);
     // upload complete
+    if(! completed){
+        return {uploadSessionId, completed: false};
+    }
     await uploadPartsComplete(uploadSessionId);
+    return {uploadSessionId, completed: true};
 };
 
-export const startUpload = async(file, progressBar, progressText, fileMetaData) => {
+export const startUpload = async(file, progressBar, progressText, fileMetaData, checkIsPaused) => {
     // send metadata
     const { partSize, uploadSessionId } = await sendFileMetaData(fileMetaData);
     // get expected parts
@@ -31,11 +35,18 @@ export const startUpload = async(file, progressBar, progressText, fileMetaData) 
     // array of all the parts
     const parts = Array.from({ length: expectedPartCount }, (_, i) => i + 1);
     // upload the parts
-    await uploadParts(parts, partSize, file, uploadSessionId, 0, expectedPartCount, progressBar, progressText);
+    const completed = await uploadParts(parts, partSize, file, uploadSessionId, 0, expectedPartCount, progressBar, progressText, checkIsPaused);
+    if(! completed){
+        return {uploadSessionId, completed: false};
+    }
     // upload complete
     await uploadPartsComplete(uploadSessionId);
-
+    return {uploadSessionId, completed: true};
 };
+
+// export const stopUpload = async () => {
+
+// };
 
 export const sendFileMetaData = async (fileMetaData) => {
     const response = await fetch('/uploads/uploadFile', {
@@ -70,9 +81,16 @@ export const getMissingParts = (parts, expectedPartCount) => {
 };
 
 
-export const uploadParts = async (parts, partSize, file, uploadSessionId, completedPartCount, expectedPartCount, progressBar, progressText ) => {
+export const uploadParts = async (parts, partSize, file, uploadSessionId, completedPartCount, expectedPartCount, progressBar, progressText, checkIsPaused ) => {
     // [1,4]; 
     for(let i = 0; i < parts.length; i++){
+
+        if(checkIsPaused()){
+            // upload stopped.
+            console.log("upload paused");
+            return false;
+        }
+
         let partNumber = parts[i];
 
         const start = (partNumber - 1) * partSize;
@@ -120,6 +138,7 @@ export const uploadParts = async (parts, partSize, file, uploadSessionId, comple
         showProgress(progressBar, progressText, progress);
 
     }
+    return true;
 };
 
 

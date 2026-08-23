@@ -445,3 +445,6 @@ input[type="file"]::file-selector-button:hover{
 .resume-upload:hover {
     background: #1d4ed8;
 }
+[hidden] {
+    display: none !important;
+}
