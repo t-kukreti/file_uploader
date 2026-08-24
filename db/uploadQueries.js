@@ -55,8 +55,20 @@ async function getUploadSessionById(id, userId){
 }
 
 async function saveUploadPart(data){
-    return prisma.uploadPart.create({
-        data,
+    const { uploadSessionId, partNumber } = data;
+
+    return prisma.uploadPart.upsert({
+        where: {
+            uploadSessionId_partNumber: {
+                uploadSessionId, 
+                partNumber
+            }
+        },
+        update: {
+            etag: data.etag,
+        },
+        create: data,
+
     });
 };
 

@@ -19,5 +19,6 @@ uploadRouter.post('/:uploadSessionId/complete', isAuthenticated, uploadControlle
 // resume upload routes
 
 uploadRouter.get('/:uploadSessionId/uploadState', isAuthenticated, uploadController.getUploadState);
+uploadRouter.post('/:uploadSessionId/verify', isAuthenticated, uploadController.verifyFileUpload);
 
 module.exports = uploadRouter;

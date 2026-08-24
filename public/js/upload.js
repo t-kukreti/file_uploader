@@ -1,6 +1,9 @@
 
+
+
 import { resumeUpload, startUpload } from "./resumeUploadLogic.js";
 
+    
 const progressBar = document.querySelector('#upload-progress');
 const progressText = document.querySelector('#upload-percent');
 
@@ -50,18 +53,41 @@ async function handleSubmit(e) {
             pauseButton.disabled = true;
             return;
         }
+
         const file_metaData = {
             originalName: file.name,
             size: file.size,
             mimeType: file.type,
             folderId: folderId || null,
         }
+
         const sessionId = currentUploadSessionId || uploadSessionId;
+
         let result;
+
         if (sessionId) {
-            // validate the file if its the same file when the uploadSessionId is present.
-            // this is a resume flow after interuption
-            result = await resumeUpload(sessionId, file, progressBar, progressText, () => isPaused);
+            const { folderId, ...metaDataToVerify } = file_metaData;
+            // verify the file
+            const response = await fetch(`/uploads/${sessionId}/verify`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({metaDataToVerify}),
+            });
+
+            const data = await response.json();
+            if(data.valid){
+                result = await resumeUpload(sessionId, file, progressBar, progressText, () => isPaused);
+            }
+            else{
+                alert("you didn't select the same file");
+                document.querySelector('#up_file').value = "";
+                uploadButton.hidden = false;
+                pauseButton.hidden = true;
+                return ; 
+            }
+
         }
         else {
             // normal uplaod

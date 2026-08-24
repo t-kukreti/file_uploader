@@ -253,6 +253,30 @@ const getUploadState = async (req, res, next) => {
     }
 };
 
+const verifyFileUpload = async(req, res, next) => {
+    try{
+        // expres- validatora later. 
+        const { metaDataToVerify } = req.body;
+        const { uploadSessionId } = req.params;
+        const uploadSession = await uploadQueries.getUploadSessionById(uploadSessionId, req.user.id);
+
+        if(! uploadSession){
+            return res.status(404).json({
+                error: "upload session not found",
+            });
+        }
+        const { file } = uploadSession;
+        const { originalName, mimeType, size} = metaDataToVerify;
+
+        const sameFile = originalName === file.originalName && mimeType === file.mimeType && Number(size) === Number(file.size);
+
+        return res.json({valid: sameFile});
+
+    }catch(err){
+        return next(err);
+    }
+};
+
 module.exports = {
     getFileUpload,
     postFileUpload,
@@ -260,5 +284,6 @@ module.exports = {
     completeUpload,
     savePart,
     getUploadState,
+    verifyFileUpload,
 
 }
