@@ -15,7 +15,7 @@ const viewFile = async(req,res,next)=>{
         if(!file){
             return res.sendStatus(404);
         }
-        res.render('viewFile',{file, errors: req.flash("errors")});
+        res.render('viewFile',{file:{...file, size: Number(file.size)}, errors: req.flash("errors")});
     }catch(err){
         return next(err);
     }
@@ -30,7 +30,7 @@ const downloadFile = async(req,res,next)=>{
             return res.sendStatus(404);
         }
         // think about letting the user decide the path, via the saveAs dialog.
-        const signedUrl = await storageServices.downloadFileFromSupabase(file.path, file.originalName);
+        const signedUrl = await storageServices.downloadFileFromR2(file.objectKey, file.originalName);
         return res.redirect(signedUrl);
 
     }catch(err){
