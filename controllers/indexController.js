@@ -11,7 +11,7 @@ const getIndexPage = async(req, res, next) => {
         if(req.user){
             // you can run these parallely check it out later.
             folders = await folderQueries.getFoldersByOwner(req.user.id);
-            files = await fileQueries.getAllFiles(req.user.id,null);
+            files = await fileQueries.getAllFiles(req.user.id, null);
             incompleteUploads = await uploadQueries.getIncompleteUploads(req.user.id);
         }
 

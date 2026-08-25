@@ -26,13 +26,19 @@ async function getFolderById(id,userId){
         },
         include: {
             files: {
+                where: {
+                    status: {
+                        in: ["READY"]
+                    },
+                },
                 orderBy: {
                     createdAt: 'asc',
                 }
             }
         }
     });
-}
+};
+
 async function renameFolderById(id, newFolderName){
     return prisma.folder.update({
         where: {id},
