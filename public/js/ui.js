@@ -1,6 +1,5 @@
 
 
-
 document.querySelectorAll('.rename-btn').forEach((button)=>{
     button.addEventListener('click',()=>{
         const id = button.dataset.id;

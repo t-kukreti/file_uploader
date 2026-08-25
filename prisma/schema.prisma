@@ -19,6 +19,10 @@ model User{
   passwordHash String @db.VarChar(255)
   createdAt DateTime @default(now())
 
+  emailVerified Boolean @default(false)
+  tokenHash String? @db.VarChar(255)
+  tokenExpiry DateTime?
+
   files File[]
   folders Folder[]
   uploadSessions UploadSession[]

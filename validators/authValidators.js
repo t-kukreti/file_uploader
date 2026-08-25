@@ -1,5 +1,6 @@
 const userQueries = require('../db/userQueries');
-const {body} = require('express-validator');
+const { body } = require('express-validator');
+
 const postSignUpValidation = [
     body('email').isEmail().withMessage(`Email must be formatted correctly`),
     body('password').isStrongPassword().withMessage(`create a stronger password`),

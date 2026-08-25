@@ -12,5 +12,10 @@ authRouter.post('/login', authController.postLogInForm);
 
 authRouter.get('/logout', authController.getLogOut);
 
+authRouter.get('/verifyEmail', authController.getVerifyEmailPage);
+authRouter.get('/verifyEmail/confirm', authController.confirmEmail);
+
+authRouter.get('/reVerifyEmail', authController.reVerifyEmail);
+
 
 module.exports = authRouter;
