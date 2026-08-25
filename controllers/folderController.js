@@ -84,10 +84,9 @@ const deleteFolder = async(req,res,next)=>{
             return res.sendStatus(404);
         }
 
-        // delete all the files from supabase
         const files = await fileQueries.getAllFiles(req.user.id,folder.id);
-        const paths = files.map(file => file.path);
-        await storageServices.deleteFilesFromSupabase(paths);
+        const objectKeys = files.map(file => file.objectKey);
+        await storageServices.deleteFilesFromR2(objectKeys);
 
         // delete the folder 
         await folderQueries.deleteFolderById(folder.id);

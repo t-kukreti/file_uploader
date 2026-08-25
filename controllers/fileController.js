@@ -1,13 +1,8 @@
 const fileQueries = require('../db/fileQueries');
 const storageServices = require('../services/storageServices');
 
-const {renameFileValidation} = require('../validators/commonValidators');
+const { renameFileValidation } = require('../validators/commonValidators');
 const { validationResult, matchedData } = require('express-validator');
-
-
-
-
-
 
 const viewFile = async(req,res,next)=>{
     try{
@@ -45,9 +40,7 @@ const deleteFile = async(req,res,next)=>{
         if(!file){
             return res.sendStatus(404);
         }
-
-        // delete file from supabase
-        await storageServices.deleteFilesFromSupabase([file.path]);
+        await storageServices.deleteFileFromR2(file.objectKey);
         // delete record from db
         await fileQueries.deleteFileById(file.id);
 
