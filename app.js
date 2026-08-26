@@ -9,6 +9,8 @@ const flash = require('express-flash');
 const {generalLimiter, authLimiter, uploadLimiter} = require('./middleware/rateLimiter');
 const helmet = require('helmet');
 
+require('./jobs');
+
 const PORT = process.env.PORT || 8000;
 
 const app = express();

@@ -115,6 +115,23 @@ const deleteUploadSessionById = async(id) => {
     });
 };
 
+const getExpiredUploadSessions = async () => {
+    return prisma.uploadSession.findMany({
+        where: {
+            expiresAt: {
+                lt: new Date(),
+            },
+            status: {
+                in: ["IN_PROGRESS", "PAUSED"],
+            },
+        },
+        include: {
+            file: true,
+        },
+    });
+};
+
+
 module.exports = {
     uploadInDb,
     createUploadRecords,
@@ -124,4 +141,5 @@ module.exports = {
     getAllUploadParts,
     getIncompleteUploads,
     deleteUploadSessionById,
+    getExpiredUploadSessions,
 }

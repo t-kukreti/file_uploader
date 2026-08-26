@@ -233,7 +233,7 @@ const deleteIncompleteUpload = async (req, res, next) => {
 
         await abortMultiPartUpload(objectKey, uploadId);
 
-        await fileQueries.deleteFileById(fileId);
+        await fileQueries.deleteFileById(fileId); // 
         // await uploadQueries.deleteUploadSessionById(uploadSessionId);
 
         return res.sendStatus(204);
