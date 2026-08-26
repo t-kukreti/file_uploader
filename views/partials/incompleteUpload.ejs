@@ -1,18 +1,21 @@
-
-<% if (incompleteUploads.length > 0) { %>
+<% if (incompleteUploads.length> 0) { %>
     <section class="incomplete-uploads">
         <h2>Uploads in progress</h2>
 
-        <% incompleteUploads.forEach(upload => { %>
+        <% incompleteUploads.forEach(upload=> { %>
             <div class="upload-item">
-                <span><%= upload.file.originalName %></span>
-
-                <button 
-                    class="resume-upload"
-                    data-upload-id="<%= upload.id %>">
-                    Resume
-                </button>
+                <span>
+                    <%= upload.file.originalName %>
+                </span>
+                <div class="upload-btns">
+                    <button class="resume-upload" data-upload-id="<%= upload.id %>">
+                        Resume
+                    </button>
+                    <button class="cancel-upload" data-upload-id="<%= upload.id %>">
+                        Cancel
+                    </button>
+                </div>
             </div>
-        <% }) %>
+            <% }) %>
     </section>
-<% } %>
+    <% } %>

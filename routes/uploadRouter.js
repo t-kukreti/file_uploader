@@ -21,4 +21,6 @@ uploadRouter.post('/:uploadSessionId/complete', isAuthenticated, uploadControlle
 uploadRouter.get('/:uploadSessionId/uploadState', isAuthenticated, uploadController.getUploadState);
 uploadRouter.post('/:uploadSessionId/verify', isAuthenticated, uploadController.verifyFileUpload);
 
+uploadRouter.delete('/:uploadSessionId', isAuthenticated, uploadController.deleteIncompleteUpload);
+
 module.exports = uploadRouter;

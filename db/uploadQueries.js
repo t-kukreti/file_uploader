@@ -107,6 +107,14 @@ async function getIncompleteUploads(userId){
     });
 };
 
+const deleteUploadSessionById = async(id) => {
+    return prisma.uploadSession.delete({
+        where: {
+            id,
+        }
+    });
+};
+
 module.exports = {
     uploadInDb,
     createUploadRecords,
@@ -115,4 +123,5 @@ module.exports = {
     saveUploadPart,
     getAllUploadParts,
     getIncompleteUploads,
+    deleteUploadSessionById,
 }

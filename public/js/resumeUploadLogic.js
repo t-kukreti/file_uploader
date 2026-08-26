@@ -64,11 +64,6 @@ export const sendFileMetaData = async (fileMetaData) => {
 };
 
 
-
-
-
-
-
 export const getExpectedPartCount = (file, partSize) => Math.ceil(Number(file.size)/partSize);
 export const getMissingParts = (parts, expectedPartCount) => {
     // retrieve all parts from the db
@@ -155,7 +150,6 @@ export const uploadPartsComplete = async(uploadSessionId) => {
     const completeData = await completeResponse.json();
     console.log("Upload Completed: ", completeData);
 };
-
 
 export const calculateProgress = (completedParts, totalParts) => {
     return (completedParts/ totalParts) * 100;

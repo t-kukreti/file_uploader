@@ -47,3 +47,21 @@ document.querySelectorAll(".resume-upload").forEach((button) => {
         window.location.href = `/uploads/uploadFile?resume=${uploadSessionId}`;
     });
 });
+
+document.querySelectorAll(".cancel-upload").forEach((button) => {
+    button.addEventListener('click', async() => {
+        console.log('cancel button clicked');
+        const uploadSessionId = button.dataset.uploadId;
+        console.log(uploadSessionId);
+
+        const response = await fetch(`/uploads/${uploadSessionId}`,{
+            method: "DELETE",
+        });
+
+        if(! response.ok){
+            throw new Error("Some error occurred");
+        }
+        console.log("File deleted");
+        window.location.reload();
+    });
+});

@@ -441,6 +441,16 @@ input[type="file"]::file-selector-button:hover{
     font-weight: 600;
     cursor: pointer;
 }
+.cancel-upload {
+    width: auto;
+    padding: .6rem 1rem;
+    border: none;
+    border-radius: 8px;
+    background: #eb5325;
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+}
 
 .resume-upload:hover {
     background: #1d4ed8;

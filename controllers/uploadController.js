@@ -1,7 +1,8 @@
 const uploadQueries = require('../db/uploadQueries');
 const folderQueries = require('../db/folderQueries');
+const fileQueries = require('../db/fileQueries');
 
-const { multiPartInitialization, uploadPart,  completedMultiPartUpload } = require('../services/uploadServices');
+const { multiPartInitialization, uploadPart,  completedMultiPartUpload, abortMultiPartUpload } = require('../services/uploadServices');
 
 const { randomUUID } = require('crypto');
 
@@ -221,6 +222,27 @@ const verifyFileUpload = async(req, res, next) => {
     }
 };
 
+
+const deleteIncompleteUpload = async (req, res, next) => {
+    try{
+        const { uploadSessionId } = req.params;
+        const uploadSession = await verifyUploadSession(uploadSessionId, req.user.id);
+        if(! uploadSession) return res.status(404).json({error: "Upload session not found"});
+
+        const { objectKey, uploadId, fileId } = uploadSession;
+
+        await abortMultiPartUpload(objectKey, uploadId);
+
+        await fileQueries.deleteFileById(fileId);
+        // await uploadQueries.deleteUploadSessionById(uploadSessionId);
+
+        return res.sendStatus(204);
+
+    }catch(err){
+        return next(err);
+    }
+};
+
 module.exports = {
     getFileUpload,
     postFileUpload,
@@ -229,4 +251,5 @@ module.exports = {
     savePart,
     getUploadState,
     verifyFileUpload,
+    deleteIncompleteUpload,
 }
