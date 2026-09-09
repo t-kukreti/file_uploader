@@ -24,29 +24,51 @@ export const resumeUpload = async (uploadSessionId, file, progressBar, progressT
         return {uploadSessionId, completed: false};
     }
     await uploadPartsComplete(uploadSessionId);
-    return {uploadSessionId, completed: true};
+    return {completed: true};
 };
 
-export const startUpload = async(file, progressBar, progressText, fileMetaData, checkIsPaused) => {
+export const startUpload = async(file, progressBar, progressText, fileMetaData, checkIsPaused, onSessionCreated) => {
     // send metadata
     const { partSize, uploadSessionId } = await sendFileMetaData(fileMetaData);
+    // set currentSessionId
+    onSessionCreated(uploadSessionId);
     // get expected parts
     const expectedPartCount = getExpectedPartCount(fileMetaData, partSize);
     // array of all the parts
     const parts = Array.from({ length: expectedPartCount }, (_, i) => i + 1);
     // upload the parts
     const completed = await uploadParts(parts, partSize, file, uploadSessionId, 0, expectedPartCount, progressBar, progressText, checkIsPaused);
+
     if(! completed){
         return {uploadSessionId, completed: false};
     }
     // upload complete
     await uploadPartsComplete(uploadSessionId);
-    return {uploadSessionId, completed: true};
+    return {completed: true};
 };
 
-// export const stopUpload = async () => {
+export const stopUpload = async (uploadSessionId) => {
+    // get the current state 
+    const stateResponse = await fetch(`/uploads/${uploadSessionId}/uploadState`);
+    if(! stateResponse.ok){
+        throw new Error("Error occured while fetching upload State");
+    }
 
-// };
+    const uploadState = await stateResponse.json();
+    const {fileMetaData} = uploadState;
+
+    if(fileMetaData.status === "READY") return {alreadyCompleted: true};
+
+    // upload not complete
+    const abortResponse = await fetch(`/uploads/${uploadSessionId}`, {
+        method: "DELETE",
+    });
+
+    if(! abortResponse.ok) throw new Error ("Failed to abort upload");
+    
+    return {alreadyCompleted: false};
+
+};
 
 export const sendFileMetaData = async (fileMetaData) => {
     const response = await fetch('/uploads/uploadFile', {

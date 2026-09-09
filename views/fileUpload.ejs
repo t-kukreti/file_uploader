@@ -45,9 +45,15 @@
                         Pause
                     </button>
                     
+                    <button class="btn btn-danger" type="button" id="stop-btn" hidden> 
+                        Stop Upload
+                    </button>
+                    
                     <button class="btn btn-primary" type="submit" id="upload-btn">
                         <%= uploadSessionId ? "Resume Upload" : "Upload" %>
                     </button>
+
+
                 </form>
                 <p class="auth-link">
                     <a href="<%=folder ? '/folders/' + folder.id : '/'%>">← Cancel</a>
