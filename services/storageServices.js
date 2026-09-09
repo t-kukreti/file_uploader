@@ -3,7 +3,6 @@ const { GetObjectCommand, DeleteObjectCommand, DeleteObjectsCommand } = require(
 const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
 const r2Client = require('../lib/r2');
 
-
 async function downloadFileFromR2(obj_key, fileName) {
     const command = new GetObjectCommand({
         Bucket: process.env.R2_BUCKET_NAME,
@@ -42,3 +41,4 @@ module.exports = {
     deleteFileFromR2,
     deleteFilesFromR2,
 }
+

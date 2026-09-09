@@ -20,7 +20,7 @@ const updateTokenById = async (id, tokenExpiry, tokenHash) => {
         },
 
     });
-};
+}; 
 
 const findUserById = async(id) => {
     return await prisma.user.findUnique({

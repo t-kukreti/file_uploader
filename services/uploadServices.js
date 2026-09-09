@@ -51,5 +51,4 @@ module.exports = {
     uploadPart,
     completedMultiPartUpload,
     abortMultiPartUpload,
-
 }

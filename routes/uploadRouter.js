@@ -2,7 +2,6 @@ const {Router} = require('express');
 const uploadController = require('../controllers/uploadController');
 const upload = require('../lib/multer');
 const {isAuthenticated} = require('../middleware/auth');
-const { UploadPartOutput$ } = require('@aws-sdk/client-s3');
 
 const uploadRouter = Router();
 
