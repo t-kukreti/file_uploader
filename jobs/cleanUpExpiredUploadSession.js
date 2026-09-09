@@ -3,7 +3,7 @@ const { getExpiredUploadSessions } = require('../db/uploadQueries');
 const { deleteFileById } = require('../db/fileQueries');
 const { abortMultiPartUpload } = require('../services/uploadServices');
 
-cron.schedule("* * * * * ", async() => {
+cron.schedule("*/15 * * * *", async() => {
     // get all expired upload session.
     const expiredSessions = await getExpiredUploadSessions();
 
