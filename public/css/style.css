@@ -89,6 +89,12 @@ body {
     outline: none;
     border-color: #2563eb;
 }
+.form-group progress, span{
+    display: none;
+}
+.form-group progress.visible, span.visible{
+    display: inline;
+}
 
 .btn {
     display: inline-block;

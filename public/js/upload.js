@@ -13,6 +13,7 @@ const stopButton = uploadForm.querySelector('#stop-btn');
 let isPaused = false; 
 let isStopping = false;
 let currentUploadSessionId = null;
+let currentXhr = null;
 
 
 uploadForm.addEventListener('submit', handleSubmit);
@@ -53,7 +54,7 @@ async function handleStop(){
     stopButton.textContent = "Stopping ...";
 
     try{
-        const result = await stopUpload(currentUploadSessionId);
+        const result = await stopUpload(currentUploadSessionId, currentXhr);
         if(result.alreadyCompleted){
             alert("Your file finished uploading just before you clicked stop. It has been saved.");
             const folderId = document.querySelector('input[name="folderId"]').value;
@@ -82,6 +83,10 @@ async function handleSubmit(e) {
     const onSessionCreated = (sessionId) => {
         currentUploadSessionId = sessionId;
     };
+
+    const setCurrentXhr = (xhr) => {
+        currentXhr = xhr;
+    }
 
     e.preventDefault();
     showAvailableButtons();
@@ -125,7 +130,7 @@ async function handleSubmit(e) {
             const data = await response.json();
             if(data.valid){
                 currentUploadSessionId = sessionId;
-                result = await resumeUpload(sessionId, file, progressBar, progressText, () => isPaused);
+                result = await resumeUpload(sessionId, file, progressBar, progressText, () => isPaused, setCurrentXhr);
             }
             else{
                 alert("you didn't select the same file");
@@ -139,7 +144,7 @@ async function handleSubmit(e) {
         }
         else {
             // normal uplaod
-            result = await startUpload(file, progressBar, progressText, file_metaData, () => isPaused, onSessionCreated);
+            result = await startUpload(file, progressBar, progressText, file_metaData, () => isPaused, onSessionCreated, setCurrentXhr);
         }
         
         // redirect to home page or to the specific folder

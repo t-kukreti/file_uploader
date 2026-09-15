@@ -1,8 +1,8 @@
-export const resumeUpload = async (uploadSessionId, file, progressBar, progressText, checkIsPaused) => {
+export const resumeUpload = async (uploadSessionId, file, progressBar, progressText, checkIsPaused, setCurrentXhr) => {
     // fetch the uploadState of current file
     const response = await fetch(`/uploads/${uploadSessionId}/uploadState`);
 
-    if(!response.ok){
+    if (!response.ok) {
         throw new Error("Error occurred while fetching upload state");
     }
 
@@ -13,21 +13,26 @@ export const resumeUpload = async (uploadSessionId, file, progressBar, progressT
     const expectedPartCount = getExpectedPartCount(fileMetaData, partSize);
     // get missing parts
     const missingParts = getMissingParts(parts, expectedPartCount);
-    const completedParts = parts.length;
 
-    const progressSaved = calculateProgress(completedParts, expectedPartCount);
-    showProgress(progressBar, progressText, progressSaved);
+    const completedBytes = parts.reduce((total, part) => {
+        const start = (part.partNumber - 1) * partSize;
+        const end = Math.min(start + partSize, file.size);
+
+        return total + (end - start);
+    }, 0);
+
+
     // upload the parts
-    const completed = await uploadParts(missingParts, partSize, file, uploadSessionId, completedParts, expectedPartCount,  progressBar, progressText, checkIsPaused);
+    const completed = await uploadParts(missingParts, partSize, file, uploadSessionId, progressBar, progressText, checkIsPaused, setCurrentXhr, completedBytes);
     // upload complete
-    if(! completed){
-        return {uploadSessionId, completed: false};
+    if (!completed) {
+        return { uploadSessionId, completed: false };
     }
     await uploadPartsComplete(uploadSessionId);
-    return {completed: true};
+    return { completed: true };
 };
 
-export const startUpload = async(file, progressBar, progressText, fileMetaData, checkIsPaused, onSessionCreated) => {
+export const startUpload = async (file, progressBar, progressText, fileMetaData, checkIsPaused, onSessionCreated, setCurrentXhr) => {
     // send metadata
     const { partSize, uploadSessionId } = await sendFileMetaData(fileMetaData);
     // set currentSessionId
@@ -37,36 +42,40 @@ export const startUpload = async(file, progressBar, progressText, fileMetaData, 
     // array of all the parts
     const parts = Array.from({ length: expectedPartCount }, (_, i) => i + 1);
     // upload the parts
-    const completed = await uploadParts(parts, partSize, file, uploadSessionId, 0, expectedPartCount, progressBar, progressText, checkIsPaused);
+    const completed = await uploadParts(parts, partSize, file, uploadSessionId, progressBar, progressText, checkIsPaused, setCurrentXhr, 0);
 
-    if(! completed){
-        return {uploadSessionId, completed: false};
+    if (!completed) {
+        return { uploadSessionId, completed: false };
     }
     // upload complete
     await uploadPartsComplete(uploadSessionId);
-    return {completed: true};
+    return { completed: true };
 };
 
-export const stopUpload = async (uploadSessionId) => {
+export const stopUpload = async (uploadSessionId, currentXhr) => {
     // get the current state 
     const stateResponse = await fetch(`/uploads/${uploadSessionId}/uploadState`);
-    if(! stateResponse.ok){
+    if (!stateResponse.ok) {
         throw new Error("Error occured while fetching upload State");
     }
 
     const uploadState = await stateResponse.json();
-    const {fileMetaData} = uploadState;
+    const { fileMetaData } = uploadState;
 
-    if(fileMetaData.status === "READY") return {alreadyCompleted: true};
+    if (fileMetaData.status === "READY") return { alreadyCompleted: true };
+
+    if(currentXhr){
+        currentXhr.abort();
+    }
 
     // upload not complete
     const abortResponse = await fetch(`/uploads/${uploadSessionId}`, {
         method: "DELETE",
     });
 
-    if(! abortResponse.ok) throw new Error ("Failed to abort upload");
-    
-    return {alreadyCompleted: false};
+    if (!abortResponse.ok) throw new Error("Failed to abort upload");
+
+    return { alreadyCompleted: false };
 
 };
 
@@ -78,7 +87,7 @@ export const sendFileMetaData = async (fileMetaData) => {
         },
         body: JSON.stringify(fileMetaData),
     });
-    if(!response.ok){
+    if (!response.ok) {
         throw new Error("Error occurred while sending file metadata");
     }
     const data = await response.json();
@@ -86,23 +95,23 @@ export const sendFileMetaData = async (fileMetaData) => {
 };
 
 
-export const getExpectedPartCount = (file, partSize) => Math.ceil(Number(file.size)/partSize);
+export const getExpectedPartCount = (file, partSize) => Math.ceil(Number(file.size) / partSize);
 export const getMissingParts = (parts, expectedPartCount) => {
     // retrieve all parts from the db
     const allParts = new Set(parts.map((part) => part.partNumber));
     let missingParts = [];
-    for(let i = 1; i <= expectedPartCount; i++){
-        if( !allParts.has(i)) missingParts.push(i);
+    for (let i = 1; i <= expectedPartCount; i++) {
+        if (!allParts.has(i)) missingParts.push(i);
     }
     return missingParts;
 };
 
 
-export const uploadParts = async (parts, partSize, file, uploadSessionId, completedPartCount, expectedPartCount, progressBar, progressText, checkIsPaused ) => {
+export const uploadParts = async (parts, partSize, file, uploadSessionId, progressBar, progressText, checkIsPaused, setCurrentXhr, completedBytes) => {
     // [1,4]; 
-    for(let i = 0; i < parts.length; i++){
+    for (let i = 0; i < parts.length; i++) {
 
-        if(checkIsPaused()){
+        if (checkIsPaused()) {
             // upload stopped.
             console.log("upload paused");
             return false;
@@ -120,65 +129,105 @@ export const uploadParts = async (parts, partSize, file, uploadSessionId, comple
             method: "POST",
         });
 
-        if(!partResponse.ok) throw new Error(`Error occurred while sending part: ${partNumber}`);
+        if (!partResponse.ok) throw new Error(`Error occurred while sending part: ${partNumber}`);
 
         const partData = await partResponse.json();
 
-        const uploadResponse = await fetch(partData.signedUrl, {
-            method: "PUT",
-            body: chunk,
-        });
+        // upload the file data in chunks
+        const etag = await uploadChunksWithXhr(partData.signedUrl, chunk, progressBar, progressText, setCurrentXhr, completedBytes, file.size);
 
-        if(! uploadResponse.ok){
-            throw new Error(`part ${partNumber} uplaod failed`);
-        }
 
-        const etag = uploadResponse.headers.get('ETag');
-
-        if(!etag) throw new Error(`Etag missing for part: ${partNumber}`);
-
+        if (!etag) throw new Error(`Etag missing for part: ${partNumber}`);
+        
+        
         // save etag, partno. and uploadSessionId to the db
         const saveResponse = await fetch(`/uploads/${uploadSessionId}/parts/${partNumber}`, {
             method: "PUT",
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({etag}),
+            body: JSON.stringify({ etag }),
         });
-
-        if(!saveResponse.ok) throw new Error(`Failed to save part: ${partNumber}`);
-
-
-
-        const progress = calculateProgress( (i+1+completedPartCount), expectedPartCount);
-
-        showProgress(progressBar, progressText, progress);
+        
+        if (!saveResponse.ok) throw new Error(`Failed to save part: ${partNumber}`);
+        completedBytes += chunk.size;
 
     }
     return true;
 };
 
+const uploadChunksWithXhr = async (signedUrl, chunk, progressBar, progressText, setCurrentXhr, completedBytes, fileSize) => {
 
-export const uploadPartsComplete = async(uploadSessionId) => {
+    return new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        setCurrentXhr(xhr);
+    xhr.open('PUT', signedUrl, true);
+
+    // when upload starts, display progress bar
+    xhr.upload.addEventListener('loadstart', () => {
+        progressBar.classList.add('visible');
+        progressText.classList.add('visible');
+    });
+
+    // progress event recieved, we update the bar
+    xhr.upload.addEventListener('progress', (e) => {
+        const uploadedBytes = completedBytes + e.loaded;
+        const progress = (uploadedBytes / fileSize) * 100;
+        progressBar.value = progress;
+        progressText.textContent = `Uploading (${progress.toFixed(2)}%)...`;
+    });
+
+    // chunk upload complete successfully, get the etag
+    xhr.addEventListener('load', () => {
+        if(xhr.status >= 200 && xhr.status < 300){
+            const etag = xhr.getResponseHeader('ETag');
+
+            if(!etag){
+                reject(new Error("Etag missing from upload response"));
+                setCurrentXhr(null);
+                return ;
+            }
+            setCurrentXhr(null);
+            resolve(etag);
+            
+        } else {
+            setCurrentXhr(null);
+            reject(new Error(`Upload failed with status: ${xhr.status}`));
+        }
+    });
+
+    // in case of an error, abort, or a timeout, we hide the progress bar
+    function errorAction(event) {
+        progressBar.classList.remove('visible');
+        progressText.textContent = `Upload failed: ${event.type}`;
+        setCurrentXhr(null);
+
+        reject(new Error(`Upload: ${event.type}`));
+    }
+
+    xhr.upload.addEventListener('error', errorAction);
+    xhr.upload.addEventListener('abort', errorAction);
+    xhr.upload.addEventListener('timeout', errorAction);
+    
+    
+    xhr.send(chunk);
+    
+});
+
+};
+
+export const uploadPartsComplete = async (uploadSessionId) => {
     const completeResponse = await fetch(`/uploads/${uploadSessionId}/complete`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
         },
     });
-    if(!completeResponse.ok){
+    if (!completeResponse.ok) {
         throw new Error("Error occurred while completing upload");
     }
     const completeData = await completeResponse.json();
     console.log("Upload Completed: ", completeData);
 };
 
-export const calculateProgress = (completedParts, totalParts) => {
-    return (completedParts/ totalParts) * 100;
-};
-
-export const showProgress = (progressBar, progressText, progress) => {
-    progressBar.value = progress;
-    progressText.textContent = `${Math.round(progress)}%`;
-};
 
