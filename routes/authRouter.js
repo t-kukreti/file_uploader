@@ -17,5 +17,9 @@ authRouter.get('/verifyEmail/confirm', authController.confirmEmail);
 
 authRouter.get('/reVerifyEmail', authController.reVerifyEmail);
 
+authRouter.get('/forgot-password', authController.getForgotPasswordPage);
+authRouter.post('/forgot-password', authController.postForgotPasswordPage);
+authRouter.get('/forgot-password/confirm', authController.verifyForgotPasswordRequest);
 
+authRouter.post('/change-password', authController.postChangePasswordPage);
 module.exports = authRouter;

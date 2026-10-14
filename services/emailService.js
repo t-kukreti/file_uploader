@@ -17,6 +17,22 @@ const sendVerificationMail = async (email, token, userId) => {
 };
 
 
+const sendForgottenPasswordMail = async (email, token, userId) => {
+    const passwordResetLink = `${process.env.APP_URL}/auth/forgot-password/confirm?userId=${userId}&passwordResetToken=${token}`;
+    await resend.emails.send({
+        from: 'FileUploader <no-reply@notifications.fileuploader.in>',
+        to: email,
+        subject: 'Reset your password',
+        html: `
+                <h1>Reset your Password</h1>
+                <p>Click the link below to reset your password:</p>
+                <a href="${passwordResetLink}">
+                    Reset your Password
+                </a>
+            `
+    });
+};
 module.exports = {
-    sendVerificationMail
+    sendVerificationMail,
+    sendForgottenPasswordMail,
 }

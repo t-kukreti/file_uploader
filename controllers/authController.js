@@ -1,6 +1,6 @@
 const { validationResult, matchedData } = require('express-validator');
 const { generateToken, hashToken, verifyToken } = require('../lib/tokenUtils');
-const { sendVerificationMail } = require('../services/emailService');
+const { sendVerificationMail, sendForgottenPasswordMail } = require('../services/emailService');
 const userQueries = require('../db/userQueries');
 const passwordUtils = require('../lib/passwordUtils');
 const passport = require('passport');
@@ -155,6 +155,98 @@ const reVerifyEmail = async(req, res, next) => {
     }
 };
 
+const getForgotPasswordPage = (req, res) => {
+    res.render('forgotPasswordPage', {
+        errors: req.flash('errors'),
+    }); 
+};
+
+const postForgotPasswordPage = async(req, res, next) => {
+    try{
+        const userEmail = req.body.email;
+        const user = await userQueries.findUserByEmail(userEmail);
+        
+        if(! user) return res.redirect('/auth/forgot-password');
+        const passwordResetToken = generateToken();
+        
+        const tokenExpiry = new Date();
+        tokenExpiry.setMinutes(tokenExpiry.getMinutes() + 15);
+
+        const passwordResetTokenHash = await hashToken(passwordResetToken);
+
+        await userQueries.updateTokenById(user.id, tokenExpiry, passwordResetTokenHash); 
+        await sendForgottenPasswordMail(userEmail, passwordResetToken, user.id);
+
+        return res.render('verifyForgotPasswordEmail', {
+            errors: req.flash("errors"),
+        });
+        
+    }catch(err){
+        return next(err);
+    }
+
+};
+const verifyForgotPasswordRequest = async(req, res, next) => {
+    try{
+        const { userId, passwordResetToken } = req.query;
+        const user = await userQueries.findUserById(Number(userId));
+
+        if(!user || !user.emailVerified) return res.status(400).send("Invalid reset link");
+
+         if (!user.tokenHash || !user.tokenExpiry) {
+            return res.status(400).send("Invalid reset link");
+        }
+
+        if (new Date() > user.tokenExpiry) {
+            return res.status(400).send("reset link expired");
+        }
+
+        const valid = await verifyToken(passwordResetToken, user.tokenHash);
+
+        if(!valid){
+            return res.status(400).send("Invalid reset link");
+        }
+
+        // render the change password page
+        return res.render('changePasswordPage', {
+            token: passwordResetToken,
+            userId: user.id,
+            errors: req.flash("errors"),
+        });
+
+    }catch(err){
+        return next(err);
+    }
+};
+
+
+const postChangePasswordPage = async(req, res, next) => {
+    try{
+        // validate password 
+        const { token, userId, password } = req.body;
+        
+        const user = await userQueries.findUserById(Number(userId));
+
+        if(!user || !user.tokenExpiry || !user.tokenHash) return res.status(400).send("invalid reset link");
+
+        if(new Date() > user.tokenExpiry) return res.status(400).send("reset link expired");
+
+        const valid = await verifyToken(token, user.tokenHash);
+
+        if(!valid) return res.status(400).send("invalid reset link");
+
+        const hashPassword = await passwordUtils.hashPassword(password);
+
+        await userQueries.updatePassword(Number(userId), hashPassword);
+
+        return res.redirect('/auth/login');
+
+    }catch(err){
+        return next(err);
+    }
+
+};
+
 
 module.exports = {
     getSignUpForm,
@@ -165,4 +257,9 @@ module.exports = {
     getVerifyEmailPage,
     confirmEmail,
     reVerifyEmail,
+    getForgotPasswordPage,
+    postForgotPasswordPage,
+    verifyForgotPasswordRequest,
+    postChangePasswordPage,
+    
 }

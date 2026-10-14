@@ -52,6 +52,19 @@ const verifyEmail = async(id) => {
         },
     });
 };
+const updatePassword = async(id, passwordHash) => {
+    return prisma.user.update({
+        where: {
+            id,
+        },
+        data: {
+            passwordHash,
+            tokenExpiry: null,
+            tokenHash: null
+        }
+    });
+
+};
 
 
 module.exports ={
@@ -60,5 +73,5 @@ module.exports ={
     findUserById,
     verifyEmail,
     updateTokenById,
-    
+    updatePassword,
 }

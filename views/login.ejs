@@ -30,6 +30,10 @@
             Don't have an account? 
             <a href="/auth/sign-up">Create one</a>
         </p>
+        <p class="auth-link">
+            Forgot Your password? 
+            <a href="/auth/forgot-password">Reset your password</a>
+        </p>
         <% if(unverified && userId){ %>
         <p class="auth-link">Verify your email
             <a href="/auth/reVerifyEmail?userId=<%=userId%>">Verify Your Email</a>
